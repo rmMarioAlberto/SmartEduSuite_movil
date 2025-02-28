@@ -9,7 +9,7 @@ const Tab = createBottomTabNavigator();
 const TeacherNavigator = () => {
   return (
     <Tab.Navigator
-      initialRouteName="TeacherHome"
+    initialRouteName="Horario"
       screenOptions={({ route }) => ({  
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
