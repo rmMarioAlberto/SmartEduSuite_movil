@@ -9,15 +9,15 @@ const Tab = createBottomTabNavigator();
 const TeacherNavigator = () => {
   return (
     <Tab.Navigator
-    initialRouteName="Horario"
+      initialRouteName="Horario"
       screenOptions={({ route }) => ({  
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
           if (route.name === 'Horario') {
-            iconName = focused ? 'home' : 'home-outline';
+            iconName = focused ? 'home' : 'home-filled';
           } else if (route.name === 'Perfil') {
-            iconName = focused ? 'person' : 'person-outline';
+            iconName = focused ? 'person' : 'person-filled';
           }
 
           return <MaterialIcons name={iconName} size={size} color={color} />;
