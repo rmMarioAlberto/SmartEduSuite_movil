@@ -9,14 +9,14 @@ const Tab = createBottomTabNavigator();
 const StudentNavigator = () => {
   return (
     <Tab.Navigator
-      initialRouteName="StudentHome"
+      initialRouteName="Horario"
       screenOptions={({ route }) => ({  
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'StudentHome') {
+          if (route.name === 'Horario') {
             iconName = focused ? 'home' : 'home-filled';
-          } else if (route.name === 'StudentProfile') {
+          } else if (route.name === 'Perfil') {
             iconName = focused ? 'person' : 'person-filled';
           }
 
@@ -26,8 +26,8 @@ const StudentNavigator = () => {
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="StudentHome" component={StudentHomeScreen} />
-      <Tab.Screen name="StudentProfile" component={StudentProfileScreen} />
+      <Tab.Screen name="Horario" component={StudentHomeScreen} />
+      <Tab.Screen name="Perfil" component={StudentProfileScreen} />
     </Tab.Navigator>
   );
 };
