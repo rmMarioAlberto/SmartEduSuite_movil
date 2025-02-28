@@ -12,10 +12,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
 
     const handleLogin = () => {
         // Aquí puedes añadir la lógica de autenticación
-        if (email === 'maes' && password === '123') {
+        if (email === 'admin@gmail.com' && password === '123') {
             setErrorMessage('');
             onLogin('teacher');
-        } else if (email === 'estu' && password === '123') {
+        } else if (email === 'user@gmail.com' && password === '123') {
             setErrorMessage('');
             onLogin('student');
         } else {
