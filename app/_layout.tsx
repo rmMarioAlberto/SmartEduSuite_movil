@@ -1,14 +1,14 @@
 import { useFonts } from 'expo-font';
+import React from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { AuthProvider } from './src/context/AuthContext';
+import { useColorScheme } from '../hooks/useColorScheme';
+import StudentTabLayout from './(app)/(student)/_layout';
+import TeacherTabLayout from './(app)/(teacher)/_layout';
 
-import { AuthProvider } from '@/src/context/AuthContext';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -28,11 +28,8 @@ export default function RootLayout() {
   }
 
   return (
-        <AuthProvider>
-            <Stack>
-                <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
-                <Stack.Screen name="+not-found" />
-            </Stack>
-        </AuthProvider>
+    <AuthProvider>
+      <Stack screenOptions={{ headerShown: false }}/>
+    </AuthProvider>
   );
 }

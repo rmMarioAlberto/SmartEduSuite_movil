@@ -1,4 +1,6 @@
 export const login = async (correo: string, contra: string) => {
+    let isFirstLogin = false; // Flag to check if it's the first login
+
     try {
         const response = await fetch(
             'https://smar-edu-suite-backend.vercel.app/movil/login', {
@@ -15,14 +17,17 @@ export const login = async (correo: string, contra: string) => {
             throw new Error(data.message || 'Error desconocido');
         }
 
-        // Asegúrate de usar 'tokenMovil' en lugar de 'token'
+        // Asegúrate de usar 'tokenMovil' en lugar de 'token'.
         if (data.user && data.tokenMovil) {
+            isFirstLogin = data.user.firstLogin; // Check if it's the first login
+
             if (data.user.tipo === 3) {
                 throw new Error('El tipo de usuario no tiene acceso al sistema');
             }
-            return { user: data.user, token: data.tokenMovil };
+            return { user: data.user, token: data.tokenMovil, isFirstLogin }; // Return the flag
+
         } else {
-            throw new Error(`Datos de usuario o token no válidos ${data.user} hhh`);
+            throw new Error("Datos de usuario o token no válidos ${data.user} hhh");
         }
     } catch (error) {
         console.error('Error en el login:', error);

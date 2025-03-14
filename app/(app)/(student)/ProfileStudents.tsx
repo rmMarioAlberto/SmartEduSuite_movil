@@ -1,5 +1,5 @@
 import React from 'react';
-import Profile from '@/components/movil/Profile';
+import Profile from '../../../components/movil/Profile';
 
 const ProfileStudents = ({ navigation }) => {
     const handleLogout = () => {

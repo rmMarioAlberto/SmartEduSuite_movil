@@ -1,12 +1,53 @@
-// (auth)/ChangePassword.tsx
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { changePassword } from '../src/services/auth/authServices'; 
+import { useRouter } from 'expo-router'; // ✅ Usa useRouter para navegación en Expo Router
 
-// IMPORTANTE: Debe haber un export default
 export default function ChangePasswordScreen() {
+    const router = useRouter(); // ✅ Reemplaza navigation.navigate
+
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
+    const handleChangePassword = async () => {
+        if (newPassword !== confirmPassword) {
+            Alert.alert('Error', 'Las contraseñas no coinciden');
+            return;
+        }
+
+        try {
+            const userId = await AsyncStorage.getItem('userId');
+            if (!userId) {
+                Alert.alert('Error', 'No se pudo encontrar el ID de usuario');
+                return;
+            }
+            await changePassword(userId, newPassword);
+            Alert.alert('Éxito', 'Contraseña cambiada exitosamente');
+            
+            router.push('/(auth)/login'); // ✅ Corrige la navegación
+        } catch (error) {
+            Alert.alert('Error', 'No se pudo cambiar la contraseña');
+            console.error('Error changing password:', error);
+        }
+    };
+
     return (
         <View>
             <Text>Cambiar contraseña</Text>
+            <TextInput
+                placeholder="Nueva contraseña"
+                secureTextEntry
+                value={newPassword}
+                onChangeText={setNewPassword}
+            />
+            <TextInput
+                placeholder="Confirmar contraseña"
+                secureTextEntry
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+            />
+            <Button title="Guardar" onPress={handleChangePassword} />
         </View>
     );
 }

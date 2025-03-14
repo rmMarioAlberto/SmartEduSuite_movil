@@ -1,6 +1,5 @@
 import React from 'react';
-import Profile from '@/components/movil/Profile';
-
+import Profile from '../../../components/movil/Profile'; // Corrected import
 import { NavigationProp } from '@react-navigation/native';
 
 const ProfileTeachers = ({ navigation }: { navigation: NavigationProp<any> }) => {
