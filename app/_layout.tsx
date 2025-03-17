@@ -8,6 +8,7 @@ import { AuthProvider } from './src/context/AuthContext';
 import { useColorScheme } from '../hooks/useColorScheme';
 import StudentTabLayout from './(app)/(student)/_layout';
 import TeacherTabLayout from './(app)/(teacher)/_layout';
+import AuthLayout from './(auth)/_layout';
 
 SplashScreen.preventAutoHideAsync();
 

@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { login as authLogin } from '../services/auth/authServices';
-import ChangePasswordScreen from '../../(auth)/changePassword';
+import ChangePasswordScreen from '../../(auth)/changePasswordScreen';
 
 interface User {
   id: number;
