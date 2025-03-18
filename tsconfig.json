@@ -12,7 +12,7 @@
     "app/**/*",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ],
+, "src/context", "src/services/auth/authServices.ts"  ],
   "exclude": [
     "node_modules"
   ],

@@ -1,38 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
-import { login as loginService } from '../src/services/auth/authServices';
 import * as SecureStore from 'expo-secure-store';
-import { useNavigation } from 'expo-router';
-import ChangePasswordScreen from './changePasswordScreen';
+import { useRouter } from 'expo-router';
+import { AuthContext } from '../../src/context/AuthContext';
 
 export default function LoginScreen() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [correo, setEmail] = useState('');
+    const [contra, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const navigation = useNavigation();
+    const { login } = useContext(AuthContext);
+    const router = useRouter();
 
     const handleLogin = async () => {
-        try {
-            const data = await loginService(email, password);
+        const result = await login(correo, contra);
+        if (!result.success) {
+            setErrorMessage(result.error || 'Error al iniciar sesión');
+        } else {
             setErrorMessage('');
-
-            // Guardar token y userId en SecureStore
-            await SecureStore.setItemAsync('token', data.token);
-            await SecureStore.setItemAsync('userId', data.user.id.toString());
-
-            // Verificar si es el primer login
-            if (data.isFirstLogin) {
-                Alert.alert(
-                    'Primer inicio de sesión',
-                    'Debes cambiar tu contraseña antes de continuar.',
-                    [{ text: 'OK', onPress: () => navigation.navigate('ChangePasswordScreen') }]
-                );
+            if ( result.isFirstLogin ) {
+                Alert.alert( 'Primer login', 'Debes cambiar tu contraseña' );
             } else {
-                console.log('Inicio de sesión exitoso');
+                Alert.alert( 'Bienvenido', 'Inicio de sesión exitoso' );
             }
-
-        } catch (error: any) {
-            setErrorMessage(error.message);
         }
     };
 
@@ -42,7 +31,7 @@ export default function LoginScreen() {
             <TextInput
                 style={styles.input}
                 placeholder="Email"
-                value={email}
+                value={correo}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -50,7 +39,7 @@ export default function LoginScreen() {
             <TextInput
                 style={styles.input}
                 placeholder="Contraseña"
-                value={password}
+                value={contra}
                 onChangeText={setPassword}
                 secureTextEntry
             />
