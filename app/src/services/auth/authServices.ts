@@ -1,5 +1,5 @@
 export const login = async (correo: string, contra: string) => {
-    let isFirstLogin = false; // Flag to check if it's the first login
+    let isFirstLogin = false; 
 
     try {
         const response = await fetch(

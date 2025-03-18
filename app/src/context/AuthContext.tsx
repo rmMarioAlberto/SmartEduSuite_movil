@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { login as authLogin } from '../services/auth/authServices';
+import { login as authLogin } from '../../src/services/auth/authServices';
 import { useRouter } from 'expo-router';
 
 interface User {
@@ -18,31 +18,31 @@ interface User {
 
 interface AuthContextProps {
   user: User | null;
-  token: string | null;
+  tokenMovil: string | null;
   login: (correo: string, contra: string) => Promise<{ success: boolean, isFirstLogin?: boolean, error?: string }>;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
-  token: null,
+  tokenMovil: null,
   login: () => Promise.resolve({ success: false }), // Pendiente.
   logout: () => { },
 });
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState(null);
+  const [tokenMovil, setTokenMovil] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const loadUser = async () => {
       try {
         const userData = await SecureStore.getItemAsync('user');
-        const userToken = await SecureStore.getItemAsync('token');
-        if (userData && userToken) {
+        const userTokenMovil = await SecureStore.getItemAsync('tokenMovil');
+        if (userData && userTokenMovil) {
           setUser(JSON.parse(userData));
-          setToken(userToken);
+          setTokenMovil(userTokenMovil);
         }
       } catch (error) {
         console.error('Failed to load user data', error);
@@ -57,30 +57,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       // Primero necesitamos acceder a data, user y token.
       const response = await authLogin(correo, contra);
-      const { user, token, isFirstLogin } = response.data;
+      const { user, tokenMovil, isFirstLogin, message } = response.data;
 
       console.log( 'Datos recibidos del backend: ', response.data );
-      console.log ( 'Token a guardar: ', token, typeof token );
+      console.log ( 'Token a guardar: ', tokenMovil, typeof tokenMovil );
 
       await SecureStore.setItemAsync('user', JSON.stringify(user));
 
-      if ( !token ) {
-        throw new Error('No se recibió token del servidor.');
+      if ( !tokenMovil ) {
+        throw new Error( message || 'No se recibió token del servidor.');
       }
 
       if ( !user ) {
-        throw new Error('No se recibió user del servidor.');
+        throw new Error( message || 'No se recibió user del servidor.');
       }
       
       // Con esto, nos aseguramos de que el token sea un String.
-      await SecureStore.setItemAsync('token', String(token));
-      await SecureStore.setItemAsync('token', token);
+      await SecureStore.setItemAsync('tokenMovil', String(tokenMovil));
 
       setUser(user);
-      setToken(token);
+      setTokenMovil(tokenMovil);
 
       if (isFirstLogin) {
-        router.push('/(auth)/ChangePasswordScreen');
+        router.push('/(auth)/changePassword');
       } else {
         if (user.tipo === 2) {
           router.push('/(app)/(teacher)/TeacherHomeScreen');
@@ -101,13 +100,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = async () => {
     setUser(null);
-    setToken(null);
+    setTokenMovil(null);
     await SecureStore.deleteItemAsync('user');
-    await SecureStore.deleteItemAsync('token');
+    await SecureStore.deleteItemAsync('tokenMovil');
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, tokenMovil, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
