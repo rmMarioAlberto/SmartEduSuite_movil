@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { changePassword } from '../src/services/auth/authServices';
 import { useRouter } from 'expo-router';
 
@@ -17,7 +17,7 @@ export default function ChangePasswordScreen() {
         }
 
         try {
-            const userId = await AsyncStorage.getItem('userId');
+            const userId = await SecureStore.getItemAsync('userId');
             if (!userId) {
                 Alert.alert('Error', 'No se pudo encontrar el ID de usuario');
                 return;
