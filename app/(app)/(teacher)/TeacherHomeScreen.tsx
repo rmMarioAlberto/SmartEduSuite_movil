@@ -32,7 +32,7 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
           style={styles.qrButton}
           onPress={() => navigation.navigate('QRScanner')}
         >
-          <Text style={styles.qrButtonText}>Leer QR</Text>
+          <Text style={styles.qrButtonText}>Generar QR</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.schedule}>
@@ -52,6 +52,7 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
+    top: 45,
     flex: 1,
     backgroundColor: '#ffffff',
   },

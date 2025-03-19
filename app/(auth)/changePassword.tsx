@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
-import { changePassword } from '../src/services/auth/authServices'; 
-import { useRouter } from 'expo-router'; 
+import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { changePassword } from '../src/services/auth/authServices';
+import { useRouter } from 'expo-router';
 
 export default function ChangePasswordScreen() {
-    const router = useRouter(); 
+    const router = useRouter();
 
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -24,7 +24,7 @@ export default function ChangePasswordScreen() {
             }
             await changePassword(userId, newPassword);
             Alert.alert('Éxito', 'Contraseña cambiada exitosamente');
-            
+
             router.push('/(auth)/login');
         } catch (error) {
             Alert.alert('Error', 'No se pudo cambiar la contraseña');
@@ -33,15 +33,17 @@ export default function ChangePasswordScreen() {
     };
 
     return (
-        <View>
-            <Text>Cambiar contraseña</Text>
+        <View style={styles.container}>
+            <Text style={styles.title}>Cambiar contraseña</Text>
             <TextInput
+                style={styles.input}
                 placeholder="Nueva contraseña"
                 secureTextEntry
                 value={newPassword}
                 onChangeText={setNewPassword}
             />
             <TextInput
+                style={styles.input}
                 placeholder="Confirmar contraseña"
                 secureTextEntry
                 value={confirmPassword}
@@ -51,3 +53,30 @@ export default function ChangePasswordScreen() {
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        padding: 16,
+        backgroundColor: '#ffffff',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 16,
+        textAlign: 'center',
+    },
+    input: {
+        height: 40,
+        borderColor: '#cccccc',
+        borderWidth: 1,
+        marginBottom: 12,
+        paddingLeft: 8,
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 12,
+        textAlign: 'center',
+    },
+});

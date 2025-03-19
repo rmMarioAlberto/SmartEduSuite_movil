@@ -53,6 +53,7 @@ const StudentHomeScreen: React.FC<Props> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
+    top: 45,
     flex: 1,
     backgroundColor: '#ffffff',
   },

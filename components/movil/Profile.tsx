@@ -3,19 +3,19 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 
 interface ProfileProps {
     name: string;
-    email: string;
+    correo: string;
     role: string;
     onLogout: () => void;
 }
 
-const Profile: React.FC<ProfileProps> = ({ name, email, role, onLogout }) => {
+const Profile: React.FC<ProfileProps> = ({ name, correo, role, onLogout }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Perfil de Usuario</Text>
             <Text style={styles.label}>Nombre:</Text>
             <Text style={styles.value}>{name}</Text>
-            <Text style={styles.label}>Email:</Text>
-            <Text style={styles.value}>{email}</Text>
+            <Text style={styles.label}>Correo:</Text>
+            <Text style={styles.value}>{correo}</Text>
             <Text style={styles.label}>Rol:</Text>
             <Text style={styles.value}>{role}</Text>
             <Button title="Cerrar Sesión" onPress={onLogout} />

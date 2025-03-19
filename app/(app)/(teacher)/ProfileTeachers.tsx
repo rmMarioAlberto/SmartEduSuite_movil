@@ -1,17 +1,22 @@
-import React from 'react';
-import Profile from '../../../components/movil/Profile'; // Corrected import
-import { NavigationProp } from '@react-navigation/native';
+import React, { useContext } from 'react';
+import Profile from '../../../components/movil/Profile';
+import { AuthContext } from '../../src/context/AuthContext';
+import { useRouter } from 'expo-router';
 
-const ProfileTeachers = ({ navigation }: { navigation: NavigationProp<any> }) => {
-  const handleLogout = () => {
-    // Lógica para cerrar sesión
-    navigation.navigate('Login');
+
+const ProfileTeachers = () => {
+  const { logout, user } = useContext(AuthContext);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace('/(auth)/login');
   };
 
   return (
     <Profile
-      name="John Doe"
-      email="teacher@example.com"
+      name={'${user?.nombre} ${user?.apellidoPa} ${user?.apellidoMa}'}
+      correo= { user?.correo }
       role="Maestro"
       onLogout={handleLogout}
     />

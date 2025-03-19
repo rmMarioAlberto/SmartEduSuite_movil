@@ -57,6 +57,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       // Primero necesitamos acceder a data, user y token.
       const response = await authLogin(correo, contra);
+      console.log('Datos recibidos del backend: ', response);
       const { user, tokenMovil, isFirstLogin, message } = response.data;
 
       console.log( 'Datos recibidos del backend: ', response.data );
@@ -64,9 +65,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       await SecureStore.setItemAsync('user', JSON.stringify(user));
 
-      if ( !tokenMovil ) {
-        throw new Error( message || 'No se recibió token del servidor.');
+      if (!tokenMovil) {
+        console.warn('Token vacío, algo salió mal');
+        return { success: false, error: message || 'No se recibió token del servidor.' };
       }
+      
 
       if ( !user ) {
         throw new Error( message || 'No se recibió user del servidor.');
@@ -80,7 +83,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (isFirstLogin) {
         router.push('/(auth)/changePassword');
-      } else {
+      } else {  
         if (user.tipo === 2) {
           router.push('/(app)/(teacher)/TeacherHomeScreen');
         } else if (user.tipo === 1) {
