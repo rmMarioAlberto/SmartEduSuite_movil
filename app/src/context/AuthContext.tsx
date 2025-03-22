@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { login as authLogin } from '../../src/services/auth/authServices';
+import { logout as authLogout } from '../../src/services/auth/authServices';
 import { useRouter } from 'expo-router';
 
 interface User {
@@ -31,7 +32,7 @@ export const AuthContext = createContext<AuthContextProps>({
 });
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [tokenMovil, setTokenMovil] = useState<string | null>(null);
   const router = useRouter();
 
@@ -60,8 +61,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.log('Datos recibidos del backend: ', response);
       const { user, tokenMovil, isFirstLogin, message } = response.data;
 
-      console.log( 'Datos recibidos del backend: ', response.data );
-      console.log ( 'Token a guardar: ', tokenMovil, typeof tokenMovil );
+      console.log('Datos recibidos del backend: ', response.data);
+      console.log('Token a guardar: ', tokenMovil, typeof tokenMovil);
 
       await SecureStore.setItemAsync('user', JSON.stringify(user));
 
@@ -69,12 +70,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.warn('Token vacío, algo salió mal');
         return { success: false, error: message || 'No se recibió token del servidor.' };
       }
-      
 
-      if ( !user ) {
-        throw new Error( message || 'No se recibió user del servidor.');
+
+      if (!user) {
+        throw new Error(message || 'No se recibió user del servidor.');
       }
-      
+
       // Con esto, nos aseguramos de que el token sea un String.
       await SecureStore.setItemAsync('tokenMovil', String(tokenMovil));
 
@@ -83,7 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (isFirstLogin) {
         router.push('/(auth)/changePassword');
-      } else {  
+      } else {
         if (user.tipo === 2) {
           router.push('/(app)/(teacher)/TeacherHomeScreen');
         } else if (user.tipo === 1) {
@@ -100,13 +101,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-
   const logout = async () => {
-    setUser(null);
-    setTokenMovil(null);
-    await SecureStore.deleteItemAsync('user');
-    await SecureStore.deleteItemAsync('tokenMovil');
-  };
+    try {
+      if (user && tokenMovil) {
+
+        // Se llama al servicio para eliminar el token de la bd.
+        await authLogout(user.id);
+
+        // Se elimina el token y usuario del SecureStore.
+        await SecureStore.deleteItemAsync('user');
+        await SecureStore.deleteItemAsync('tokenMovil');
+
+        setUser(null);
+        setTokenMovil(null);
+
+        router.push('/(auth)/login');
+      } else {
+        console.warn('No hay usuario o token para cerrar sesión.')
+      }
+
+    } catch (error) {
+      console.error('Error al cerrar sesión: ', error);
+    }
+  }
 
   return (
     <AuthContext.Provider value={{ user, tokenMovil, login, logout }}>

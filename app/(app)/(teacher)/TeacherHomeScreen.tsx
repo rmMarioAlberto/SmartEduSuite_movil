@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity  } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { ClasesContext } from '../../src/context/ClasesContext';
 
 type RootStackParamList = {
   TeacherHome: undefined;
@@ -21,13 +22,25 @@ type Props = {
 };
 
 const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
+  const {claseActual, getClaseActual } = useContext(ClasesContext);
+
+  useEffect(() => {
+    getClaseActual();
+  }, []);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.currentClass}>
-        <Text style={styles.currentClassText}>Clase actual:</Text>
-        <Text style={styles.currentClassName}>Inglés V.</Text>
-        <Text style={styles.currentClassDetails}>Grupo: T244.</Text>
-        <Text style={styles.currentClassDetails}>Salón: I-10.</Text>
+        <Text style={styles.currentClassText}>  Clase actual: </Text>
+        {claseActual ? (
+          <>
+          <Text style={styles.currentClassName}>{claseActual.materia}</Text>
+          <Text style={styles.currentClassDetails}> Grupo: {claseActual.grupo} </Text>
+          <Text style={styles.currentClassDetails}> Salón: {claseActual.salon} </Text>
+          </>
+        ) :(
+          <Text style={styles.currentClassDetails}> No hay clase activa. </Text>
+        )}
         <TouchableOpacity 
           style={styles.qrButton}
           onPress={() => navigation.navigate('QRScanner')}
@@ -52,7 +65,7 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    top: 45,
+    top: 35,
     flex: 1,
     backgroundColor: '#ffffff',
   },

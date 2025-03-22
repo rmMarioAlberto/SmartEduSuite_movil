@@ -1,5 +1,5 @@
 export const login = async (correo: string, contra: string) => {
-    let isFirstLogin = false; 
+    let isFirstLogin = false;
 
     try {
         const response = await fetch(
@@ -14,7 +14,7 @@ export const login = async (correo: string, contra: string) => {
         const data = await response.json();
 
         // Con esto, solo retornará la respuesta y otro componente lo manejará. :p 
-        return { status : response.status, data };
+        return { status: response.status, data };
 
     } catch (error) {
         console.error('Error en el login:', error);
@@ -54,6 +54,39 @@ export const changePassword = async (id: string, newPassword: string) => {
         }
     } catch (error) {
         console.error('Error al cambiar la contraseña:', error);
+        throw error;
+    }
+};
+
+import * as SecureStore from 'expo-secure-store';
+
+export const logout = async (idUsuario: number) => {
+    try {
+        const tokenMovil = await SecureStore.getItemAsync('tokenMovil');
+        if (!tokenMovil) {
+            throw new Error('No se encontró el token de sesión.');
+        }
+
+        console.log('Enviando al backend:', { idUsuario, tokenMovil });
+        const response = await fetch('https://smar-edu-suite-backend.vercel.app/movil/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ idUsuario, tokenMovil }),
+        });
+        console.log(`${idUsuario} ------  ${tokenMovil}`);
+
+        const data = await response.json();
+        console.log('Respuesta del backend logout: ', data);
+
+        if (!response.ok) {
+            throw new Error(data.message + (data.err ? ' - ' + JSON.stringify(data.err) : '') || 'Error al cerrar sesión.');
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error en el logout:', error);
         throw error;
     }
 };

@@ -53,6 +53,7 @@ const StudentHomeScreen: React.FC<Props> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
+    margin: 30,
     top: 45,
     flex: 1,
     backgroundColor: '#ffffff',
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
   qrButton: {
     position: 'absolute',
     bottom: 10,
-    right: 10,
+    right: 15,
     backgroundColor: '#007BFF',
     padding: 5,
     borderRadius: 5,

@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Profile from '../../../components/movil/Profile';
+import { AuthContext } from '../../src/context/AuthContext';
 
-const ProfileStudents = ({ navigation }) => {
-    const handleLogout = () => {
-        // Lógica para cerrar sesión
-        navigation.navigate('Login');
+const ProfileStudents = () => {
+    const { logout, user } = useContext(AuthContext);
+
+    const handleLogout = async () => {
+        await logout();
     };
 
     return (
         <Profile
-            name="Jane Doe"
-            email="student@example.com"
-            role="Estudiante"
+            name={`${user?.nombre} ${user?.apellidoPa} ${user?.apellidoMa}`}
+            correo={user?.correo}
+            role="Alumno."
             onLogout={handleLogout}
         />
     );

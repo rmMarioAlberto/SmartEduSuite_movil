@@ -17,11 +17,20 @@ export default function ChangePasswordScreen() {
         }
 
         try {
-            const userId = await SecureStore.getItemAsync('userId');
+            const userData = await SecureStore.getItemAsync('user');
+            if (!userData) {
+                Alert.alert('Error', 'No se pudo obtener la información del usuario');
+                return;
+            }
+            
+            const user = JSON.parse(userData);
+            const userId = user.id;
+            
             if (!userId) {
                 Alert.alert('Error', 'No se pudo encontrar el ID de usuario');
                 return;
             }
+            
             await changePassword(userId, newPassword);
             Alert.alert('Éxito', 'Contraseña cambiada exitosamente');
 
