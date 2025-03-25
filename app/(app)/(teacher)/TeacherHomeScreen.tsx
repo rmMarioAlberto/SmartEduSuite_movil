@@ -2,7 +2,7 @@ import React, { useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity  } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { ClasesContext } from '../../src/context/ClasesContext';
+import { ClasesContext } from '../../src/context/ClasesContextTeacher';
 
 type RootStackParamList = {
   TeacherHome: undefined;
@@ -22,10 +22,11 @@ type Props = {
 };
 
 const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
-  const {claseActual, getClaseActual } = useContext(ClasesContext);
+  const { claseActual, getClaseActual, horario, getHorario } = useContext(ClasesContext);
 
   useEffect(() => {
     getClaseActual();
+    getHorario();
   }, []);
 
   return (
@@ -49,15 +50,16 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.schedule}>
-        <Text style={styles.day}>Lunes</Text>
-        <Text style={styles.classTime}>7:00-8:00 - Base de datos. T244. J8</Text>
-        <Text style={styles.classTime}>8:00-9:00 - Base de datos. T244. J8</Text>
-        <Text style={styles.classTime}>9:00-10:00 - Base de datos. T244. J8</Text>
-        <Text style={styles.classTime}>10:00-11:00 - Base de datos. T244. J8</Text>
-        <Text style={styles.classTime}>11:00-12:00 - Base de datos. T244. J8</Text>
-        <Text style={styles.classTime}>12:00-1:00 - Base de datos. T244. J8</Text>
-        <Text style={styles.day}>Martes</Text>
-        <Text style={styles.classTime}>7:00-8:00 - Base de datos. T244. J8</Text>
+        <Text style={styles.day}>Horario de hoy.</Text>
+        {horario.length > 0 ? (
+          horario.map((clase) => (
+            <Text key={clase.idclase} style={styles.classTime}>
+              {clase.inicioclase} - {clase.finalclase} {clase.nombremateria} - {clase.salonnombre}
+            </Text>
+          ))        
+          ) : (
+            <Text style={styles.classTime}>No hay clases programadas.</Text>
+            )}
       </View>
     </ScrollView>
   );

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { getClaseActual as fetchClaseActual} from '../../src/services/clases/clasesServices';
+import { getClaseActualStudent as fetchClaseActual} from '../services/clases/clasesServicesStudent';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 

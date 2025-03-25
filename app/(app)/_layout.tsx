@@ -5,7 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { AuthProvider } from '../src/context/AuthContext';
-import { ClasesContext } from '../src/context/ClasesContext';
+import { ClasesContext } from '../src/context/ClasesContextTeacher';
 import { useColorScheme } from '../../hooks/useColorScheme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
