@@ -1,8 +1,8 @@
 import React, { useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity  } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { ClasesContext } from '../../src/context/ClasesContextTeacher';
+import { ClasesContext } from '../../../src/context/ClasesContextTeacher';
 
 type RootStackParamList = {
   TeacherHome: undefined;
@@ -29,20 +29,28 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
     getHorario();
   }, []);
 
+  useEffect(() => {
+    console.log("Clase actual después de actualizar estado:", claseActual);
+  }, [claseActual]);
+
+  useEffect(() => {
+    console.log("Horario después de actualizar estado:", horario);
+  }, [horario]);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.currentClass}>
         <Text style={styles.currentClassText}>  Clase actual: </Text>
         {claseActual ? (
           <>
-          <Text style={styles.currentClassName}>{claseActual.materia}</Text>
-          <Text style={styles.currentClassDetails}> Grupo: {claseActual.grupo} </Text>
-          <Text style={styles.currentClassDetails}> Salón: {claseActual.salon} </Text>
+            <Text style={styles.currentClassName}>{claseActual.materia}</Text>
+            <Text style={styles.currentClassDetails}> Grupo: {claseActual.grupo} </Text>
+            <Text style={styles.currentClassDetails}> Salón: {claseActual.salon} </Text>
           </>
-        ) :(
+        ) : (
           <Text style={styles.currentClassDetails}> No hay clase activa. </Text>
         )}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.qrButton}
           onPress={() => navigation.navigate('QRScanner')}
         >
@@ -56,10 +64,10 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
             <Text key={clase.idclase} style={styles.classTime}>
               {clase.inicioclase} - {clase.finalclase} {clase.nombremateria} - {clase.salonnombre}
             </Text>
-          ))        
-          ) : (
-            <Text style={styles.classTime}>No hay clases programadas.</Text>
-            )}
+          ))
+        ) : (
+          <Text style={styles.classTime}>No hay clases programadas.</Text>
+        )}
       </View>
     </ScrollView>
   );

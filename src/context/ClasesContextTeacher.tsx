@@ -52,10 +52,10 @@ export const ClasesProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       console.log('Obteniendo clase actual para el usuario:', user);
 
       const response = await fetchClaseActual(user.id);
-
-      console.log('Respuesta del servicio: ', response);
+      console.log('Respuesta del servicio (getClaseActual): ', response);
 
       if (response && response.status === 200) {
+        console.log('Clase actual:', response.data.clase);
         setClaseActual(response.data.clase);
       }
     } catch (error) {
@@ -70,10 +70,13 @@ export const ClasesProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       if (!userData) throw new Error('No hay usuario guardado.');
       const user = JSON.parse(userData);
 
+      console.log('Obteniendo horario para el usuario: ', user);
+
       const response = await fetchHorario(user.id);
-      console.log('Horario desde context:', response);
+      console.log('Respuesta del servicio (getHorario): ', response);
 
       if (response && response.status === 200) {
+        console.log('Horario obtenido: ', response.data.clases);
         setHorario(response.data.clases);
       }
     } catch (error) {
@@ -83,8 +86,14 @@ export const ClasesProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   };
 
   useEffect(() => {
-    getClaseActual();
-    getHorario();
+    const fetchData = async () => {
+      await getClaseActual();
+      await getHorario();
+      console.log("Clase actual después de llamar a getClaseActual:", claseActual);
+      console.log("Horario después de llamar a getHorario:", horario);
+    };
+  
+    fetchData();
   }, []);
 
   return (

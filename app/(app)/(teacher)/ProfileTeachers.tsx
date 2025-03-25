@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import Profile from '../../../components/movil/Profile';
-import { AuthContext } from '../../src/context/AuthContext';
+import { AuthContext } from '../../../src/context/AuthContext';
 
 
 const ProfileTeachers = () => {

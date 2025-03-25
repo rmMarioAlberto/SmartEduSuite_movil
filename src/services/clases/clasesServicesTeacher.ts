@@ -7,6 +7,8 @@ export const getClaseActualTeacher = async (idUsuario: number) => {
             throw new Error('No se encontró el token de sesión.');
         }
 
+        console.log( 'Token obtenido de SecureStore: ', tokenMovil );
+
         const response = await fetch('https://smar-edu-suite-backend.vercel.app/movil/claseActualTeacher', {
             method: 'POST',
             headers: {
@@ -17,6 +19,8 @@ export const getClaseActualTeacher = async (idUsuario: number) => {
 
         console.log('Respuesta de la clase actual:', response);
         const data = await response.json();
+
+        console.log('Datos JSON recibidos (clase actual): ', data);
 
         switch (response.status) {
             case 200:
@@ -49,6 +53,8 @@ export const getHorarioTeacher = async (idUsuario: number) => {
             throw new Error('No se encontró el token de sesión.');
         }
 
+        console.log( 'Token obtenido de SecureStore: ', tokenMovil );
+
         const response = await fetch('https://smar-edu-suite-backend.vercel.app/movil/horarioTeacher', {
             method: 'POST',
             headers: {
@@ -57,7 +63,11 @@ export const getHorarioTeacher = async (idUsuario: number) => {
             body: JSON.stringify({ idUsuario, tokenMovil }),
         });
 
+        console.log('Respuesta de la clase actual:', response);
+
         const data = await response.json();
+        console.log('Datos JSON recibidos (clase actual): ', data);
+
 
         switch (response.status) {
             case 200:

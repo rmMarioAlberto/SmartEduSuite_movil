@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import { changePassword } from '../src/services/auth/authServices';
+import { changePassword } from '../../src/services/auth/authServices';
 import { useRouter } from 'expo-router';
 
 export default function ChangePasswordScreen() {

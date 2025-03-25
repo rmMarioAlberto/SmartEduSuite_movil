@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
-import { AuthContext } from '../src/context/AuthContext';
+import { AuthContext } from '../../src/context/AuthContext';
 
 export default function LoginScreen() {
     const [correo, setEmail] = useState('');

@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { login as authLogin } from '../../src/services/auth/authServices';
-import { logout as authLogout } from '../../src/services/auth/authServices';
+import { login as authLogin } from '../services/auth/authServices';
+import { logout as authLogout } from '../services/auth/authServices';
 import { useRouter } from 'expo-router';
 
 interface User {
