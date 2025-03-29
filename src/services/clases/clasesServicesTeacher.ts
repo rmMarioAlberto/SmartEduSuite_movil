@@ -1,13 +1,22 @@
 import * as SecureStore from 'expo-secure-store';
 
-export const getClaseActualTeacher = async (idUsuario: number) => {
+export const saveUserSession = async (idUsuario: number, tokenMovil: string) => {
+    try {
+        console.log('Guardando sesión de usuario: ', idUsuario, tokenMovil);
+        await SecureStore.setItemAsync('idUsuario', idUsuario.toString());
+        await SecureStore.setItemAsync('tokenMovil', tokenMovil);
+        console.log('Sesión guardada exitosamente');
+    } catch (error) {
+        console.error('Error al guardar sesión de usuario:', error);
+    }
+};
+
+export const claseActualTeacher = async (idUsuario: number) => {
     try {
         const tokenMovil = await SecureStore.getItemAsync('tokenMovil');
         if (!tokenMovil) {
             throw new Error('No se encontró el token de sesión.');
         }
-
-        console.log( 'Token obtenido de SecureStore: ', tokenMovil );
 
         const response = await fetch('https://smar-edu-suite-backend.vercel.app/movil/claseActualTeacher', {
             method: 'POST',
@@ -17,43 +26,33 @@ export const getClaseActualTeacher = async (idUsuario: number) => {
             body: JSON.stringify({ idUsuario, tokenMovil }),
         });
 
-        console.log('Respuesta de la clase actual:', response);
         const data = await response.json();
-
-        console.log('Datos JSON recibidos (clase actual): ', data);
 
         switch (response.status) {
             case 200:
-                return { status: response.status, data };
+                console.log('Clases activas obtenidas exitosamente');
+                return data;
             case 400:
-                throw new Error(data.message || 'Faltan datos en la solicitud.');
-            case 401:
-                throw new Error(data.message || 'Token inválido o expirado.');
-            case 404:
-                throw new Error(data.message || 'No hay clases activas.');
+                throw new Error('Usuario no encontrado');
             case 500:
-                throw new Error('Error en el servidor al consultar la clase actual.');
+                throw new Error('Error en el servidor');
             default:
                 if (!response.ok) {
-                    throw new Error(data.message || 'Error desconocido al consultar clase actual.');
+                    throw new Error(data.message || 'Error desconocido');
                 }
         }
-
     } catch (error) {
-        console.log('Error al obtner la clase actual: ', error);
+        console.error('Error al obtener las clases activas:', error);
         throw error;
     }
-
 }
 
-export const getHorarioTeacher = async (idUsuario: number) => {
+export const horarioTeacher = async (idUsuario: number) => {
     try {
         const tokenMovil = await SecureStore.getItemAsync('tokenMovil');
         if (!tokenMovil) {
             throw new Error('No se encontró el token de sesión.');
         }
-
-        console.log( 'Token obtenido de SecureStore: ', tokenMovil );
 
         const response = await fetch('https://smar-edu-suite-backend.vercel.app/movil/horarioTeacher', {
             method: 'POST',
@@ -63,30 +62,23 @@ export const getHorarioTeacher = async (idUsuario: number) => {
             body: JSON.stringify({ idUsuario, tokenMovil }),
         });
 
-        console.log('Respuesta de la clase actual:', response);
-
         const data = await response.json();
-        console.log('Datos JSON recibidos (clase actual): ', data);
-
 
         switch (response.status) {
             case 200:
-                return { status: response.status, data };
+                console.log('Horario obtenido exitosamente');
+                return data;
             case 400:
-                throw new Error(data.message || 'Faltan datos en la solicitud.');
-            case 401:
-                throw new Error(data.message || 'Token inválido o expirado.');
-            case 404:
-                throw new Error(data.message || 'No hay horario disponible.');
+                throw new Error('Usuario no encontrado');
             case 500:
-                throw new Error('Error en el servidor al consultar el horario.');
+                throw new Error('Error en el servidor');
             default:
                 if (!response.ok) {
-                    throw new Error(data.message || 'Error desconocido al consultar el horario.');
+                    throw new Error(data.message || 'Error desconocido');
                 }
         }
     } catch (error) {
-        console.log('Error al obtener el horario: ', error);
+        console.error('Error al obtener el horario:', error);
         throw error;
     }
 }

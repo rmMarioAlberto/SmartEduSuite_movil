@@ -61,10 +61,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.log('Datos recibidos del backend: ', response);
       const { user, tokenMovil, isFirstLogin, message } = response.data;
 
-      console.log('Datos recibidos del backend: ', response.data);
       console.log('Token a guardar: ', tokenMovil, typeof tokenMovil);
 
       await SecureStore.setItemAsync('user', JSON.stringify(user));
+
+      // Guardar el idUsuario en SecureStore
+      if (user && user.id) {
+        await SecureStore.setItemAsync('idUsuario', user.id.toString());
+      } else {
+        console.warn('No se encontró el id del usuario.');
+      }
 
       if (!tokenMovil) {
         console.warn('Token vacío, algo salió mal');

@@ -1,19 +1,16 @@
-import React, { useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { ClasesContext } from '../../../src/context/ClasesContextTeacher';
+import { claseActualTeacher, horarioTeacher } from '../../../src/services/clases/clasesServicesTeacher';
 
 type RootStackParamList = {
   TeacherHome: undefined;
   QRScanner: undefined;
 };
 
-type TeacherHomeScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'TeacherHome'
->;
-
+type TeacherHomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'TeacherHome'>;
 type TeacherHomeScreenRouteProp = RouteProp<RootStackParamList, 'TeacherHome'>;
 
 type Props = {
@@ -22,35 +19,58 @@ type Props = {
 };
 
 const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
-  const { claseActual, getClaseActual, horario, getHorario } = useContext(ClasesContext);
+  const [claseActual, setClaseActual] = useState<any>(null);
+  const [horario, setHorario] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getClaseActual();
-    getHorario();
+    const fetchData = async () => {
+      try {
+        const idUsuario = await SecureStore.getItemAsync('idUsuario');
+        console.log('idUsuario recuperado: ', idUsuario);
+        if (!idUsuario) {
+          throw new Error('No se encontró el id de usuario.');
+        }
+        const userId = parseInt(idUsuario, 10);
+
+        const claseActualData = await claseActualTeacher(userId);
+        setClaseActual(claseActualData);
+
+        const horarioData = await horarioTeacher(userId);
+        setHorario(horarioData.clases); // Asegúrate de acceder a la propiedad correcta
+      } catch (error) {
+        console.error('Error al obtener la clase actual o el horario:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    console.log("Clase actual después de actualizar estado:", claseActual);
-  }, [claseActual]);
-
-  useEffect(() => {
-    console.log("Horario después de actualizar estado:", horario);
-  }, [horario]);
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007BFF" />
+        <Text>Cargando...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.currentClass}>
-        <Text style={styles.currentClassText}>  Clase actual: </Text>
+        <Text style={styles.currentClassText}>Clase actual: </Text>
         {claseActual ? (
           <>
-            <Text style={styles.currentClassName}>{claseActual.materia}</Text>
-            <Text style={styles.currentClassDetails}> Grupo: {claseActual.grupo} </Text>
-            <Text style={styles.currentClassDetails}> Salón: {claseActual.salon} </Text>
+            <Text style={styles.currentClassName}>{claseActual.nombreClase}</Text>
+            <Text style={styles.currentClassDetails}>Grupo: {claseActual.grupo}</Text>
+            <Text style={styles.currentClassDetails}>Salón: {claseActual.salon}</Text>
           </>
         ) : (
-          <Text style={styles.currentClassDetails}> No hay clase activa. </Text>
+          <Text>No hay clase actual.</Text>
         )}
-        <TouchableOpacity
+        <TouchableOpacity 
           style={styles.qrButton}
           onPress={() => navigation.navigate('QRScanner')}
         >
@@ -58,25 +78,31 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.schedule}>
-        <Text style={styles.day}>Horario de hoy.</Text>
         {horario.length > 0 ? (
-          horario.map((clase) => (
-            <Text key={clase.idclase} style={styles.classTime}>
-              {clase.inicioclase} - {clase.finalclase} {clase.nombremateria} - {clase.salonnombre}
-            </Text>
+          horario.map((clase, index) => (
+            <View key={index}>
+              <Text style={styles.day}>{clase.dia}</Text>
+              <Text style={styles.classTime}>{`${clase.inicio} - ${clase.final} - ${clase.nombremateria}. Grupo: ${clase.gruponombre}. Salón: ${clase.salonnombre}`}</Text>          
+      </View>
           ))
         ) : (
-          <Text style={styles.classTime}>No hay clases programadas.</Text>
+          <Text>No hay horario disponible.</Text>
         )}
-      </View>
+        </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    top: 35,
+    top: 45,
     flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#ffffff',
   },
   currentClass: {
