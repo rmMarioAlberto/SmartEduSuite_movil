@@ -11,7 +11,7 @@ export const saveUserSession = async (idUsuario: number, tokenMovil: string) => 
     }
 };
 
-export const claseActualTeacher = async (idUsuario: number) => {
+export const claseActualTeacher = async (idUsuario: number, logout: () => void) => {
     try {
         const tokenMovil = await SecureStore.getItemAsync('tokenMovil');
         if (!tokenMovil) {
@@ -23,7 +23,7 @@ export const claseActualTeacher = async (idUsuario: number) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ idUsuario, token: tokenMovil }), // Cambié 'tokenMovil' a 'token'
+            body: JSON.stringify({ idUsuario, token: tokenMovil }),
         });
 
         const data = await response.json();
@@ -31,15 +31,17 @@ export const claseActualTeacher = async (idUsuario: number) => {
         switch (response.status) {
             case 200:
                 console.log('Clases activas obtenidas exitosamente');
-                return data;
+                return { status: response.status, data };
             case 400:
-                throw new Error('Usuario no encontrado');
+                throw new Error(data.message || 'Usuario no encontrado');
             case 401:
-                throw new Error('Token inválido');
+                console.warn('Token inválido o expirado. Cerrando sesión...');
+                logout();
+                throw new Error(data.message || 'Token inválido o expirado.');
             case 404:
-                throw new Error('No hay clases activas');
+                throw new Error(data.message || 'No hay clases activas');
             case 500:
-                throw new Error('Error en el servidor');
+                throw new Error(data.message || 'Error en el servidor');
             default:
                 if (!response.ok) {
                     throw new Error(data.message || 'Error desconocido');
@@ -51,7 +53,7 @@ export const claseActualTeacher = async (idUsuario: number) => {
     }
 }
 
-export const horarioTeacher = async (idUsuario: number) => {
+export const horarioTeacher = async (idUsuario: number, logout: () => void) => {
     try {
         const tokenMovil = await SecureStore.getItemAsync('tokenMovil');
         if (!tokenMovil) {
@@ -63,7 +65,7 @@ export const horarioTeacher = async (idUsuario: number) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ idUsuario, token: tokenMovil }), // Asegúrate de enviar 'token' en lugar de 'tokenMovil'
+            body: JSON.stringify({ idUsuario, token: tokenMovil }),
         });
 
         const data = await response.json();
@@ -71,13 +73,17 @@ export const horarioTeacher = async (idUsuario: number) => {
         switch (response.status) {
             case 200:
                 console.log('Horario obtenido exitosamente');
-                return data;
+                return { status: response.status, data };
             case 400:
-                throw new Error('Usuario no encontrado');
+                throw new Error(data.message || 'Usuario no encontrado');
             case 401:
-                throw new Error('Token inválido');
+                console.warn('Token inválido o expirado. Cerrando sesión...');
+                logout();
+                throw new Error(data.message || 'Token inválido o expirado.');
+            case 404:
+                throw new Error(data.message || 'No hay horario disponible.');
             case 500:
-                throw new Error('Error en el servidor');
+                throw new Error(data.message || 'Error en el servidor');
             default:
                 if (!response.ok) {
                     throw new Error(data.message || 'Error desconocido');

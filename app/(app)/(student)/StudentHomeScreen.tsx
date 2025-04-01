@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 import { getClasesActivasDiaAlumno, getHorarioDiaAlumno } from "../../../src/services/clases/clasesServicesStudent";
-import {ExpoRoot, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
+import { AuthContext } from '../../../src/context/AuthContext';
+import ProtectedRoute  from '../../../src/context/ProtectedRoute';
+
 
 type RootStackParamList = {
   StudentHome: undefined;
@@ -25,6 +28,7 @@ const StudentHomeScreen: React.FC<Props> = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
+  const { localLogout } = useContext(AuthContext);
 
   const fetchData = async () => {
     try {
@@ -35,10 +39,10 @@ const StudentHomeScreen: React.FC<Props> = ({ navigation }) => {
       }
       const userId = parseInt(idUsuario, 10);
 
-      const claseActualData = await getClasesActivasDiaAlumno(userId);
+      const claseActualData = await getClasesActivasDiaAlumno(userId, localLogout);
       setClaseActual(claseActualData.data);
 
-      const horarioData = await getHorarioDiaAlumno(userId);
+      const horarioData = await getHorarioDiaAlumno(userId, localLogout);
       setHorario(horarioData.data.clases);
     } catch (error) {
       console.error('Error al obtener la clase actual o el horario:', error);
@@ -67,6 +71,7 @@ const StudentHomeScreen: React.FC<Props> = ({ navigation }) => {
   }
 
   return (
+    <ProtectedRoute allowedUserType= {1}>
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.currentClass}>
         <View style={styles.classInfo}>
@@ -93,7 +98,7 @@ const StudentHomeScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.schedule}>
         {horario.length > 0 ? (
           horario.map((clase, index) => (
-            <View key={index} style={styles.classContainer}>
+            <View key={index} style={styles.classContainer }>
               <Text style={styles.day}>{`Clase: ${clase.nombremateria}`}</Text>
               <Text style={styles.classTime}>{`${clase.inicioclase} - ${clase.finalclase} - Salón: ${clase.salonnombre}`}</Text>
             </View>
@@ -115,6 +120,7 @@ const StudentHomeScreen: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     </ScrollView>
+    </ProtectedRoute>
   );  
 };
 
@@ -127,7 +133,7 @@ const styles = StyleSheet.create({
   refreshButton: {
     backgroundColor: '#4CAF50',
     paddingVertical: 10,
-    paddingHorizontal: 50 ,
+    paddingHorizontal: 50,
     borderRadius: 5,
     alignSelf: 'center',
     marginVertical: 10,

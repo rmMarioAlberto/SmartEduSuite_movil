@@ -2,6 +2,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Alert, Button } from 'react-native'; // Asegúrate de importar Button
 import { scanQR } from "../../../src/services/clases/pasarLista";
+import ProtectedRoute  from '../../../src/context/ProtectedRoute';
 
 export default function QRScanner() {
     const [permission, requestPermission] = useCameraPermissions();
@@ -47,28 +48,30 @@ export default function QRScanner() {
     };
 
     return (
-        <View style={styles.container}>
-            <CameraView
-                style={styles.camera}
-                facing="back"
-                onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-                barcodeScannerSettings={{
-                    barcodeTypes: ['qr'],
-                }}
-            >
-                {/* Overlay que cubre toda la pantalla */}
-                <View style={styles.overlay}>
-                    {/* Cuatro vistas para crear el efecto de recorte */}
-                    <View style={styles.topOverlay} />
-                    <View style={styles.middleRow}>
-                        <View style={styles.sideOverlay} />
-                        <View style={styles.transparentArea} />
-                        <View style={styles.sideOverlay} />
+        <ProtectedRoute allowedUserType={1}>
+            <View style={styles.container}>
+                <CameraView
+                    style={styles.camera}
+                    facing="back"
+                    onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                    barcodeScannerSettings={{
+                        barcodeTypes: ['qr'],
+                    }}
+                >
+                    {/* Overlay que cubre toda la pantalla */}
+                    <View style={styles.overlay}>
+                        {/* Cuatro vistas para crear el efecto de recorte */}
+                        <View style={styles.topOverlay} />
+                        <View style={styles.middleRow}>
+                            <View style={styles.sideOverlay} />
+                            <View style={styles.transparentArea} />
+                            <View style={styles.sideOverlay} />
+                        </View>
+                        <View style={styles.bottomOverlay} />
                     </View>
-                    <View style={styles.bottomOverlay} />
-                </View>
-            </CameraView>
-        </View>
+                </CameraView>
+            </View>
+        </ProtectedRoute>
     );
 }
 

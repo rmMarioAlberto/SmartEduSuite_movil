@@ -4,9 +4,23 @@ import * as React from 'react';
 import { Button, Text } from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
 import { useRouter } from 'expo-router';
+import { useContext, useEffect } from 'react';
+import { AuthContext } from '../src/context/AuthContext';
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (user) {
+      // Redirige al usuario a la pantalla correspondiente si ya está autenticado
+      if (user.tipo === 2) {
+        router.replace('/(app)/(teacher)/TeacherHomeScreen');
+      } else if (user.tipo === 1) {
+        router.replace('/(app)/(student)/StudentHomeScreen');
+      }
+    }
+  }, [user]);
 
   const handleNavigateToLogin = () => {
     router.push('/(auth)/login'); // Navega a la pantalla de inicio de sesión

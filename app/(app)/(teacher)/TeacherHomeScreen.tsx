@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Modal, Image } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { claseActualTeacher, horarioTeacher } from '../../../src/services/clases/clasesServicesTeacher';
+import ProtectedRoute from '../../../src/context/ProtectedRoute';
+import { AuthContext } from '../../../src/context/AuthContext';
+import { useRouter } from "expo-router";
 
 type RootStackParamList = {
   TeacherHome: undefined;
@@ -24,6 +27,8 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [qrVisible, setQrVisible] = useState(false);
+  const router = useRouter();
+  const { localLogout } = useContext(AuthContext);
 
   const fetchData = async () => {
     try {
@@ -34,11 +39,11 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
       }
       const userId = parseInt(idUsuario, 10);
 
-      const claseActualData = await claseActualTeacher(userId);
-      setClaseActual(claseActualData);
+      const claseActualData = await claseActualTeacher(userId, localLogout);
+      setClaseActual(claseActualData.data);
 
-      const horarioData = await horarioTeacher(userId);
-      setHorario(horarioData.clases);
+      const horarioData = await horarioTeacher(userId, localLogout);
+      setHorario(horarioData.data.clases);
     } catch (error) {
       console.error('Error al obtener la clase actual o el horario:', error);
     } finally {
@@ -66,72 +71,74 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.currentClass}>
-        <View style={styles.classInfo}>
-          <Text style={styles.currentClassText}>Clase actual: </Text>
-          {claseActual ? (
-            <>
-              <Text style={styles.currentClassName}>{claseActual.nombremateria}</Text>
-              <Text style={styles.currentClassDetails}>Inicio de clase: {claseActual.inicioclase} - {claseActual.finalclase}</Text>
-              <Text style={styles.currentClassDetails}>Hora de inicio: {formatFechaStart(claseActual.fechaStart)}</Text>
-              <Text style={styles.currentClassDetails}>Grupo: {claseActual.gruponombre}</Text>
-              <Text style={styles.currentClassDetails}>Salón: {claseActual.salonnombre}</Text>
-            </>
+    <ProtectedRoute allowedUserType={2}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.currentClass}>
+          <View style={styles.classInfo}>
+            <Text style={styles.currentClassText}>Clase actual: </Text>
+            {claseActual ? (
+              <>
+                <Text style={styles.currentClassName}>{claseActual.nombremateria}</Text>
+                <Text style={styles.currentClassDetails}>Inicio de clase: {claseActual.inicioclase} - {claseActual.finalclase}</Text>
+                <Text style={styles.currentClassDetails}>Hora de inicio: {formatFechaStart(claseActual.fechaStart)}</Text>
+                <Text style={styles.currentClassDetails}>Grupo: {claseActual.gruponombre}</Text>
+                <Text style={styles.currentClassDetails}>Salón: {claseActual.salonnombre}</Text>
+              </>
+            ) : (
+              <Text>No hay clase actual.</Text>
+            )}
+          </View>
+          <TouchableOpacity 
+            style={styles.qrButton} 
+            onPress={() => setQrVisible(true)}
+          >
+            <Text style={styles.qrButtonText}>Visualizar QR</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.schedule}>
+          {horario.length > 0 ? (
+            horario.map((clase, index) => (
+              <View key={index} style={styles.classContainer}>
+                <Text style={styles.day}>{`Clase: ${clase.nombremateria}`}</Text>
+                <Text style={styles.classTime}>{`${clase.inicioclase} - ${clase.finalclase} - Grupo: ${clase.gruponombre}. Salón: ${clase.salonnombre}`}</Text>
+              </View>
+            ))
           ) : (
-            <Text>No hay clase actual.</Text>
+            <Text>No hay horario disponible.</Text>
           )}
         </View>
-        <TouchableOpacity 
-          style={styles.qrButton} 
-          onPress={() => setQrVisible(true)}
-        >
-          <Text style={styles.qrButtonText}>Visualizar QR</Text>
-        </TouchableOpacity>
-      </View>
-      
-      <View style={styles.schedule}>
-        {horario.length > 0 ? (
-          horario.map((clase, index) => (
-            <View key={index} style={styles.classContainer}>
-              <Text style={styles.day}>{`Clase: ${clase.nombremateria}`}</Text>
-              <Text style={styles.classTime}>{`${clase.inicioclase} - ${clase.finalclase} - Grupo: ${clase.gruponombre}. Salón: ${clase.salonnombre}`}</Text>
-            </View>
-          ))
-        ) : (
-          <Text>No hay horario disponible.</Text>
-        )}
-      </View>
 
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          style={styles.refreshButton} 
-          onPress={fetchData}
-          disabled={refreshing}
-        >
-          <Text style={styles.refreshButtonText}>
-            {refreshing ? 'Actualizando...' : 'Refrescar'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <Modal
-        visible={qrVisible}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalContainer}>
-          <TouchableOpacity style={styles.closeButton} onPress={() => setQrVisible(false)}>
-            <Text style={styles.closeButtonText}>✖</Text>
+        <View style={styles.footer}>
+          <TouchableOpacity 
+            style={styles.refreshButton} 
+            onPress={fetchData}
+            disabled={refreshing}
+          >
+            <Text style={styles.refreshButtonText}>
+              {refreshing ? 'Actualizando...' : 'Refrescar'}
+            </Text>
           </TouchableOpacity>
-          <Image
-            source={{ uri: claseActual?.qrCode }}
-            style={styles.qrImage}
-            resizeMode="contain"
-          />
         </View>
-      </Modal>
-    </ScrollView>
+
+        <Modal
+          visible={qrVisible}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalContainer}>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setQrVisible(false)}>
+              <Text style={styles.closeButtonText}>✖</Text>
+            </TouchableOpacity>
+            <Image
+              source={{ uri: claseActual?.qrCode }}
+              style={styles.qrImage}
+              resizeMode="contain"
+            />
+          </View>
+        </Modal>
+      </ScrollView>
+    </ProtectedRoute>
   );
 };
 

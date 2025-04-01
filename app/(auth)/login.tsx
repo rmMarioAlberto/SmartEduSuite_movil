@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useRouter } from 'expo-router';
@@ -8,20 +8,36 @@ export default function LoginScreen() {
     const [correo, setEmail] = useState('');
     const [contra, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const { login } = useContext(AuthContext);
+    const { user, login } = useContext(AuthContext);
     const router = useRouter();
 
-    const handleLogin = async () => {
-        const result = await login(correo, contra);
-        if (!result.success) {
-            setErrorMessage(result.error || 'Error al iniciar sesión');
-        } else {
-            setErrorMessage('');
-            if (result.isFirstLogin) {
-                Alert.alert('Primer login', 'Debes cambiar tu contraseña');
-            } else {
-                Alert.alert('Bienvenido', 'Inicio de sesión exitoso');
+    useEffect(() => {
+        if (user) {
+            // Redirige al usuario a la pantalla correspondiente si ya está autenticado
+            if (user.tipo === 2) {
+                router.replace('/(app)/(teacher)/TeacherHomeScreen');
+            } else if (user.tipo === 1) {
+                router.replace('/(app)/(student)/StudentHomeScreen');
             }
+        }
+    }, [user]);
+
+    const handleLogin = async () => {
+        try {
+            const result = await login(correo, contra);
+            if (!result.success) {
+                setErrorMessage(result.error || 'Error al iniciar sesión');
+            } else {
+                setErrorMessage('');
+                if (result.isFirstLogin) {
+                    router.replace('/(auth)/changePassword')
+                    Alert.alert('Primer login', 'Debes cambiar tu contraseña');
+                } else {
+                    Alert.alert('Bienvenido', 'Inicio de sesión exitoso');
+                }
+            }
+        } catch (error) {
+            setErrorMessage('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.');
         }
     };
 
@@ -89,6 +105,5 @@ const styles = StyleSheet.create({
     },
     button: {
         marginTop: 16,
-        
     },
 });

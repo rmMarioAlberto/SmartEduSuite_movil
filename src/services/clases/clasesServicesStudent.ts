@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 
-export const getClasesActivasDiaAlumno = async (idUsuario: number) => {
+export const getClasesActivasDiaAlumno = async (idUsuario: number, logout: () => void) => {
     try {
         const tokenMovil = await SecureStore.getItemAsync('tokenMovil');
         if (!tokenMovil) {
@@ -12,7 +12,7 @@ export const getClasesActivasDiaAlumno = async (idUsuario: number) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ idUsuario, token: tokenMovil }), // Asegúrate de enviar 'token' en lugar de 'tokenMovil'
+            body: JSON.stringify({ idUsuario, token: tokenMovil }),
         });
 
         const data = await response.json();
@@ -23,6 +23,8 @@ export const getClasesActivasDiaAlumno = async (idUsuario: number) => {
             case 400:
                 throw new Error(data.message || 'Faltan datos en la solicitud.');
             case 401:
+                console.warn('Token inválido o expirado. Cerrando sesión...');
+                logout();
                 throw new Error(data.message || 'Token inválido o expirado.');
             case 404:
                 throw new Error(data.message || 'No hay clases activas.');
@@ -39,7 +41,7 @@ export const getClasesActivasDiaAlumno = async (idUsuario: number) => {
     }
 }
 
-export const getHorarioDiaAlumno = async (idUsuario: number) => {
+export const getHorarioDiaAlumno = async (idUsuario: number, logout: () => void) => {
     try {
         const tokenMovil = await SecureStore.getItemAsync('tokenMovil');
         if (!tokenMovil) {
@@ -51,7 +53,7 @@ export const getHorarioDiaAlumno = async (idUsuario: number) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ idUsuario, token: tokenMovil }), // Asegúrate de enviar 'token' en lugar de 'tokenMovil'
+            body: JSON.stringify({ idUsuario, token: tokenMovil }),
         });
 
         const data = await response.json();
@@ -62,6 +64,8 @@ export const getHorarioDiaAlumno = async (idUsuario: number) => {
             case 400:
                 throw new Error(data.message || 'Faltan datos en la solicitud.');
             case 401:
+                console.warn('Token inválido o expirado. Cerrando sesión...');
+                logout();
                 throw new Error(data.message || 'Token inválido o expirado.');
             case 404:
                 throw new Error(data.message || 'No hay horario disponible.');
