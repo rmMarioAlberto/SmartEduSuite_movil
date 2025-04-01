@@ -1,49 +1,64 @@
+// components/movil/Profile.js
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import image from "../../assets/images/SES-renderizado-dark.png";
 
-interface ProfileProps {
-    name: string;
-    correo: string;
-    role: string;
-    onLogout: () => void;
-}
-
-const Profile: React.FC<ProfileProps> = ({ name, correo, role, onLogout }) => {
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Perfil de Usuario</Text>
-            <Text style={styles.label}>Nombre:</Text>
-            <Text style={styles.value}>{name}</Text>
-            <Text style={styles.label}>Correo:</Text>
-            <Text style={styles.value}>{correo}</Text>
-            <Text style={styles.label}>Rol:</Text>
-            <Text style={styles.value}>{role}</Text>
-            <Button title="Cerrar Sesión" onPress={onLogout} />
-        </View>
-    );
+const Profile = ({ name, correo, role, onLogout }) => {
+  return (
+    <View style={styles.container}>
+      <Image
+        source={image} // Reemplaza con la URL de la imagen del usuario
+        style={styles.avatar}
+      />
+      <Text style={styles.name}>{name}</Text>
+      <Text style={styles.email}>{correo}</Text>
+      <Text style={styles.role}>{role}</Text>
+      <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
+        <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
+      </TouchableOpacity>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 16,
-        backgroundColor: '#ffffff',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    label: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginTop: 8,
-    },
-    value: {
-        fontSize: 18,
-        marginBottom: 8,
-    },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: 'white',
+  },
+  avatar: {
+    width: 100,
+    height: 110,
+    marginBottom: 20,
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  email: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 5,
+  },
+  role: {
+    fontSize: 16,
+    color: '#777',
+    marginBottom: 20,
+  },
+  logoutButton: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  logoutButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });
 
 export default Profile;

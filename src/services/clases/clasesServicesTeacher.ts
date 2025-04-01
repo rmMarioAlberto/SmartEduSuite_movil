@@ -18,12 +18,12 @@ export const claseActualTeacher = async (idUsuario: number) => {
             throw new Error('No se encontró el token de sesión.');
         }
 
-        const response = await fetch('https://smar-edu-suite-backend.vercel.app/movil/claseActualTeacher', {
+        const response = await fetch('https://smar-edu-suite-backend.vercel.app/movil/clasesActivasMaestro', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ idUsuario, tokenMovil }),
+            body: JSON.stringify({ idUsuario, token: tokenMovil }), // Cambié 'tokenMovil' a 'token'
         });
 
         const data = await response.json();
@@ -34,6 +34,10 @@ export const claseActualTeacher = async (idUsuario: number) => {
                 return data;
             case 400:
                 throw new Error('Usuario no encontrado');
+            case 401:
+                throw new Error('Token inválido');
+            case 404:
+                throw new Error('No hay clases activas');
             case 500:
                 throw new Error('Error en el servidor');
             default:
@@ -54,12 +58,12 @@ export const horarioTeacher = async (idUsuario: number) => {
             throw new Error('No se encontró el token de sesión.');
         }
 
-        const response = await fetch('https://smar-edu-suite-backend.vercel.app/movil/horarioTeacher', {
+        const response = await fetch('https://smar-edu-suite-backend.vercel.app/movil/horarioMaestro', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ idUsuario, tokenMovil }),
+            body: JSON.stringify({ idUsuario, token: tokenMovil }), // Asegúrate de enviar 'token' en lugar de 'tokenMovil'
         });
 
         const data = await response.json();
@@ -70,6 +74,8 @@ export const horarioTeacher = async (idUsuario: number) => {
                 return data;
             case 400:
                 throw new Error('Usuario no encontrado');
+            case 401:
+                throw new Error('Token inválido');
             case 500:
                 throw new Error('Error en el servidor');
             default:
