@@ -32,26 +32,30 @@ const StudentHomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const fetchData = async () => {
     try {
-      setRefreshing(true);
-      const idUsuario = await SecureStore.getItemAsync('idUsuario');
-      if (!idUsuario) {
-        throw new Error('No se encontró el id de usuario.');
-      }
-      const userId = parseInt(idUsuario, 10);
+        setRefreshing(true);
+        const idUsuario = await SecureStore.getItemAsync('idUsuario');
+        if (!idUsuario) {
+            throw new Error('No se encontró el id de usuario.');
+        }
+        const userId = parseInt(idUsuario, 10);
 
-      const claseActualData = await getClasesActivasDiaAlumno(userId, localLogout);
-      setClaseActual(claseActualData.data);
+        const claseActualData = await getClasesActivasDiaAlumno(userId, localLogout);
+        if (claseActualData.data) {
+            setClaseActual(claseActualData.data);
+        } else {
+            setClaseActual(null);
+            console.log(claseActualData.message); // Muestra el mensaje de "No hay clases activas."
+        }
 
-      const horarioData = await getHorarioDiaAlumno(userId, localLogout);
-      setHorario(horarioData.data.clases);
+        const horarioData = await getHorarioDiaAlumno(userId, localLogout);
+        setHorario(horarioData.data.clases);
     } catch (error) {
-      console.error('Error al obtener la clase actual o el horario:', error);
+        console.error('Error al obtener la clase actual o el horario:', error);
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+        setLoading(false);
+        setRefreshing(false);
     }
-  };
-
+};
   useEffect(() => {
     fetchData();
   }, []);

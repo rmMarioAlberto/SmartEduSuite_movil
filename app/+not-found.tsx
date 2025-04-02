@@ -39,7 +39,7 @@ export default function WelcomeScreen() {
         <Animatable.Image
           animation="bounceIn"
           delay={400}
-          source={require('../assets/images/SES-renderizado-dark.png')}
+          source={require('../assets/images/logo.jpg')}
           style={styles.image}
         />
         <Animatable.Text animation="fadeInUp" delay={600} style={styles.description}>

@@ -40,7 +40,12 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
       const userId = parseInt(idUsuario, 10);
 
       const claseActualData = await claseActualTeacher(userId, localLogout);
-      setClaseActual(claseActualData.data);
+      if (claseActualData.data) {
+        setClaseActual(claseActualData.data);
+      } else {
+        setClaseActual(null);
+        console.log(claseActualData.message); // Muestra el mensaje de "No hay clases activas."
+      }
 
       const horarioData = await horarioTeacher(userId, localLogout);
       setHorario(horarioData.data.clases);
@@ -88,14 +93,14 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
               <Text>No hay clase actual.</Text>
             )}
           </View>
-          <TouchableOpacity 
-            style={styles.qrButton} 
+          <TouchableOpacity
+            style={styles.qrButton}
             onPress={() => setQrVisible(true)}
           >
             <Text style={styles.qrButtonText}>Visualizar QR</Text>
           </TouchableOpacity>
         </View>
-        
+
         <View style={styles.schedule}>
           {horario.length > 0 ? (
             horario.map((clase, index) => (
@@ -110,8 +115,8 @@ const TeacherHomeScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         <View style={styles.footer}>
-          <TouchableOpacity 
-            style={styles.refreshButton} 
+          <TouchableOpacity
+            style={styles.refreshButton}
             onPress={fetchData}
             disabled={refreshing}
           >

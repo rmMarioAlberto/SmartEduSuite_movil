@@ -39,7 +39,8 @@ export const claseActualTeacher = async (idUsuario: number, logout: () => void) 
                 logout();
                 throw new Error(data.message || 'Token inválido o expirado.');
             case 404:
-                throw new Error(data.message || 'No hay clases activas');
+                // En lugar de lanzar un error, devuelve un objeto con un mensaje
+                return { status: response.status, data: null, message: 'No hay clases activas' };
             case 500:
                 throw new Error(data.message || 'Error en el servidor');
             default:
@@ -52,7 +53,6 @@ export const claseActualTeacher = async (idUsuario: number, logout: () => void) 
         throw error;
     }
 }
-
 export const horarioTeacher = async (idUsuario: number, logout: () => void) => {
     try {
         const tokenMovil = await SecureStore.getItemAsync('tokenMovil');

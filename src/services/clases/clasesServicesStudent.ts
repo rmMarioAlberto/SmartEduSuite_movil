@@ -27,7 +27,8 @@ export const getClasesActivasDiaAlumno = async (idUsuario: number, logout: () =>
                 logout();
                 throw new Error(data.message || 'Token inválido o expirado.');
             case 404:
-                throw new Error(data.message || 'No hay clases activas.');
+                // En lugar de lanzar un error, devuelve un objeto con un mensaje
+                return { status: response.status, data: null, message: 'No hay clases activas.' };
             case 500:
                 throw new Error('Error en el servidor al consultar las clases activas.');
             default:
@@ -40,6 +41,7 @@ export const getClasesActivasDiaAlumno = async (idUsuario: number, logout: () =>
         throw error;
     }
 }
+
 
 export const getHorarioDiaAlumno = async (idUsuario: number, logout: () => void) => {
     try {

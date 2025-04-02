@@ -1,7 +1,7 @@
 // components/movil/Profile.js
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import image from "../../assets/images/SES-renderizado-dark.png";
+import image from "../../assets/images/logo.jpg";
 
 const Profile = ({ name, correo, role, onLogout }) => {
   return (
